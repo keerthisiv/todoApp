@@ -1,5 +1,5 @@
 class TasksController < ApplicationController
-  before_action :set_task, only: :destroy
+  before_action :set_task, only: [:destroy, :update]
   skip_before_filter  :verify_authenticity_token
 
   def index
@@ -23,6 +23,22 @@ class TasksController < ApplicationController
     end
       @tasks = Task.all
       render json: @tasks
+  end
+
+  def toggle_all
+    if request.method != "OPTIONS"
+      Task.update_all(completed: !JSON.parse(request.body.string)["toggle"])
+    end
+    @tasks = Task.all
+    render json: @tasks
+  end
+
+  def update
+    if request.method != "OPTIONS"
+      @task.update_attribute(:description, JSON.parse(request.body.string)["description"])
+    end
+    @tasks = Task.all
+    render json: @tasks
   end
 
   def destroy
