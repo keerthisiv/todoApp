@@ -3,8 +3,8 @@ class TasksController < ApplicationController
   skip_before_filter  :verify_authenticity_token
 
   def index
-    @task = Task.new
     @tasks = Task.all
+    render json: @tasks
   end
 
   def create
@@ -39,6 +39,16 @@ class TasksController < ApplicationController
     end
     @tasks = Task.all
     render json: @tasks
+  end
+
+  def clear_completed
+    if request.method != "OPTIONS"
+      completed_tasks = Task.where(completed: true)
+      completed_tasks.destroy_all
+    end
+    @tasks = Task.all
+    render json: @tasks
+    
   end
 
   def destroy
